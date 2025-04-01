@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  webhw7:
+    image: webhw7
+    build:
+      context: .
+      dockerfile: ./Dockerfile
