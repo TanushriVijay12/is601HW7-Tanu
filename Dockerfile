@@ -1,23 +1,22 @@
-# For more information, please refer to https://aka.ms/vscode-docker-python
-FROM python:3-slim
+# Use the official Python slim image
+FROM python:3.9-slim
 
-# Keeps Python from generating .pyc files in the container
-ENV PYTHONDONTWRITEBYTECODE=1
+# Install OS-level dependencies required for Pillow
+RUN apt-get update && apt-get install -y \
+    libjpeg-dev \
+    zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Turns off buffering for easier container logging
-ENV PYTHONUNBUFFERED=1
+# Upgrade pip, setuptools, and wheel to the latest versions
+RUN pip install --upgrade pip setuptools wheel
 
-# Install pip requirements
+# Copy requirements.txt and install Python packages
 COPY requirements.txt .
 RUN python -m pip install -r requirements.txt
 
+# Set the working directory for the application code
 WORKDIR /app
 COPY . /app
 
-# Creates a non-root user with an explicit UID and adds permission to access the /app folder
-# For more info, please refer to https://aka.ms/vscode-docker-python-configure-containers
-RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
-USER appuser
-
-# During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
+# Run main.py when the container launches
 CMD ["python", "main.py"]
